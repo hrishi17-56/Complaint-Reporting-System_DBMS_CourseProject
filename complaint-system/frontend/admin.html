@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ComplaintDesk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .navbar-right span {
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-resolved {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .table {
+                font-size: 12px;
+            }
+
+            .table td, .table th {
+                padding: 8px;
+            }
+
+            .btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>⚡ ComplaintDesk - Admin</h1>
+        <div class="navbar-right">
+            <span id="userInfo"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Complaints</h3>
+                <div class="number" id="totalComplaints">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Open</h3>
+                <div class="number" id="openCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>In Progress</h3>
+                <div class="number" id="inProgressCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Resolved</h3>
+                <div class="number" id="resolvedCount">0</div>
+            </div>
+        </div>
+
+        <!-- All Complaints -->
+        <div class="section">
+            <h2>📋 All Complaints</h2>
+            <table class="table" id="complaintsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="complaintsList">
+                    <tr><td colspan="7" class="empty-state">Loading complaints...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="updateModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-header">Update Complaint Status</div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="modalTitle" disabled>
+            </div>
+            <div class="form-group">
+                <label>User Email</label>
+                <input type="email" id="modalEmail" disabled>
+            </div>
+            <div class="form-group">
+                <label>Current Status</label>
+                <input type="text" id="modalCurrentStatus" disabled>
+            </div>
+            <div class="form-group">
+                <label>New Status</label>
+                <select id="modalNewStatus">
+                    <option value="open">Open</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Remarks</label>
+                <textarea id="modalRemarks" placeholder="Add remarks about this update..."></textarea>
+            </div>
+            <button class="btn" onclick="submitStatusUpdate()">Update Status</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://127.0.0.1:5000') + '/api';
+        let currentUser = null;
+        let selectedComplaintId = null;
+
+        window.addEventListener('load', function() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                window.location.href = '/';
+                return;
+            }
+
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== 'admin') {
+                alert('Access denied. Admin panel is for administrators only.');
+                window.location.href = '/dashboard';
+                return;
+            }
+
+            document.getElementById('userInfo').textContent = `Admin: ${currentUser.name}`;
+            loadComplaintsAndStats();
+        });
+
+        function loadComplaintsAndStats() {
+            // Load all complaints
+            fetch(`${API_URL}/complaints/all`)
+                .then(res => res.json())
+                .then(data => {
+                    displayComplaints(data);
+                    updateStats(data);
+                })
+                .catch(err => console.error('Error loading complaints:', err));
+        }
+
+        function displayComplaints(complaints) {
+            const tbody = document.getElementById('complaintsList');
+            if (complaints.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No complaints found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = complaints.map(c => `
+                <tr>
+                    <td>#${c.complaint_id}</td>
+                    <td>${c.name}</td>
+                    <td>${c.title}</td>
+                    <td>${c.category_name}</td>
+                    <td><span class="status-badge status-${c.status.replace(' ', '-')}">${c.status.toUpperCase()}</span></td>
+                    <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn" onclick="openUpdateModal(${c.complaint_id}, '${c.title}', '${c.email}', '${c.status}')">Update</button>
+                        <button class="btn btn-danger" onclick="deleteComplaint(${c.complaint_id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats(complaints) {
+            document.getElementById('totalComplaints').textContent = complaints.length;
+            const stats = {
+                'open': 0,
+                'in-progress': 0,
+                'resolved': 0
+            };
+
+            complaints.forEach(c => {
+                if (stats.hasOwnProperty(c.status)) {
+                    stats[c.status]++;
+                }
+            });
+
+            document.getElementById('openCount').textContent = stats['open'];
+            document.getElementById('inProgressCount').textContent = stats['in-progress'];
+            document.getElementById('resolvedCount').textContent = stats['resolved'];
+        }
+
+        function openUpdateModal(complaintId, title, email, currentStatus) {
+            selectedComplaintId = complaintId;
+            document.getElementById('modalTitle').value = title;
+            document.getElementById('modalEmail').value = email;
+            document.getElementById('modalCurrentStatus').value = currentStatus;
+            document.getElementById('modalNewStatus').value = currentStatus;
+            document.getElementById('modalRemarks').value = '';
+            document.getElementById('updateModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('updateModal').classList.remove('show');
+        }
+
+        function submitStatusUpdate() {
+            const newStatus = document.getElementById('modalNewStatus').value;
+            const remarks = document.getElementById('modalRemarks').value;
+
+            fetch(`${API_URL}/complaints/${selectedComplaintId}/update-status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: newStatus,
+                    admin_id: currentUser.user_id,
+                    remarks
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Status updated successfully!');
+                    closeModal();
+                    loadComplaintsAndStats();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err.message));
+        }
+
+        function deleteComplaint(complaintId) {
+            if (!confirm('Are you sure you want to delete this complaint?')) return;
+
+            fetch(`${API_URL}/complaints/${complaintId}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.message) {
+                        alert('Complaint deleted successfully!');
+                        loadComplaintsAndStats();
+                    } else {
+                        alert('Error: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(err => alert('Error: ' + err.message));
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('updateModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>

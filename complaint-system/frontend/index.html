@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplaintDesk - Complaint Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            margin: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .toggle-form a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>⚡ ComplaintDesk</h1>
+                <p>Complaint Management System</p>
+            </div>
+            <div class="card-body">
+                <!-- Login Form -->
+                <div id="loginForm">
+                    <h2 style="margin-bottom: 20px; color: #333;">Login</h2>
+                    <div id="loginAlert"></div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button class="btn" onclick="login()">Login</button>
+                    <div class="loading" id="loginLoading">
+                        <div class="spinner"></div>
+                    </div>
+                    <div class="toggle-form">
+                        Don't have an account? <a onclick="toggleForms()">Register here</a>
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                <div id="registerForm" class="hidden">
+                    <h2 style="margin-bottom: 20px; color: #333;">Register</h2>
+                    <div id="registerAlert"></div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="registerName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="registerPassword" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="registerConfirm" placeholder="Confirm your password" required>
+                    </div>
+                    <button class="btn" onclick="register()">Register</button>
+                    <div class="loading" id="registerLoading">
+                        <div class="spinner"></div>
+                    </div>
+                    <div class="toggle-form">
+                        Already have an account? <a onclick="toggleForms()">Login here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://127.0.0.1:5000') + '/api';
+
+        function toggleForms() {
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+            document.getElementById('loginAlert').innerHTML = '';
+            document.getElementById('registerAlert').innerHTML = '';
+        }
+
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert('loginAlert', 'Please fill all fields', 'error');
+                return;
+            }
+
+            document.getElementById('loginLoading').classList.add('active');
+
+            fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('loginLoading').classList.remove('active');
+                if (data.user) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    if (data.user.role === 'admin') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/dashboard';
+                    }
+                } else {
+                    showAlert('loginAlert', data.error || 'Login failed', 'error');
+                }
+            })
+            .catch(err => {
+                document.getElementById('loginLoading').classList.remove('active');
+                showAlert('loginAlert', 'Connection error: ' + err.message, 'error');
+            });
+        }
+
+        function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('registerConfirm').value;
+
+            if (!name || !email || !password || !confirm) {
+                showAlert('registerAlert', 'Please fill all fields', 'error');
+                return;
+            }
+
+            if (password !== confirm) {
+                showAlert('registerAlert', 'Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('registerAlert', 'Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            document.getElementById('registerLoading').classList.add('active');
+
+            fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, role: 'user' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('registerLoading').classList.remove('active');
+                if (data.message) {
+                    showAlert('registerAlert', 'Registration successful! Please login.', 'success');
+                    setTimeout(() => toggleForms(), 1500);
+                } else {
+                    showAlert('registerAlert', data.error || 'Registration failed', 'error');
+                }
+            })
+            .catch(err => {
+                document.getElementById('registerLoading').classList.remove('active');
+                showAlert('registerAlert', 'Connection error: ' + err.message, 'error');
+            });
+        }
+
+        // Enter key to submit
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('loginForm').classList.contains('hidden')) {
+                    login();
+                } else {
+                    register();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
